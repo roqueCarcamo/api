@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportBuilder>
+ 
+    <!-- CREDENCIALES BASE DE DATOS -->
+    
+    <Connection>
+        <username>postgres</username>
+        <ip>localhost</ip>
+        <pass>SOLINCES2018</pass>
+        <database>DBPRUEBA</database>
+        <port>5432</port>
+    </Connection>
+    
+</ReportBuilder>

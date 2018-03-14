@@ -7,10 +7,10 @@
         <!--<param-value>SystemTest</param-value>-->
         <!--<param-value>UnitTest</param-value>-->
     </context-param>
-    <!--<listener>
+    <listener>
         <description>ServletContextListener</description>
-        <listener-class>com.social.service.listener.AplicacionServletListener</listener-class>
-    </listener> -->
+        <listener-class>com.services.servicios.listener.AplicacionServletListener</listener-class>
+    </listener>
     <session-config>
         <session-timeout>
             1000

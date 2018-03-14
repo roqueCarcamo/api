@@ -10,12 +10,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.services.model.User;
+import com.services.model.dataBase.ConfiguracionDataBase;
+import com.services.servicios.reader.FileReader;
+import com.services.servicios.util.SqlUtil;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.xml.sax.SAXException;
 
 /**
  * @descripcion: Clase ejemplo de servicios.
@@ -37,6 +45,20 @@ public class UsersRestControllerSRV implements Serializable {
      */
     @RequestMapping(value = "users", method = RequestMethod.GET)
     public ResponseEntity<List<User>> listAllUsers() {
+        
+        ConfiguracionDataBase conf = null;
+        try {
+            conf = FileReader.getConfigurationFromUserName("postgres");
+            SqlUtil.obtenerConexion(conf);
+            
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(UsersRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(UsersRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(UsersRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         List<User> users = userService.findAllUsers();
         if (users.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
