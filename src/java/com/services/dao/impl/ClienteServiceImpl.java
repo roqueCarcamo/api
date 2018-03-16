@@ -10,10 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.services.model.User;
 import com.services.model.dataBase.ConfiguracionDataBase;
+import com.services.servicios.ClienteRestControllerSRV;
+import com.services.servicios.reader.FileReader;
 import com.services.servicios.util.SqlUtil;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * @descripcion: Ejemplo de clase que implementa los métodos de tipo CRUD.
@@ -27,11 +34,8 @@ public class ClienteServiceImpl implements ClienteService {
 
     private static final AtomicLong counter = new AtomicLong(); //Generador de id
 
-    private static List<User> users; //Lista de usuarios.
+    private static List<Cliente> clientes; //Lista de clientes.
 
-    static {
-        users = populateDummyUsers();
-    }
 
     /**
      * @throws java.lang.Exception
@@ -42,7 +46,8 @@ public class ClienteServiceImpl implements ClienteService {
      * @return user.
      */
     @Override
-    public Cliente findById(long id, ConfiguracionDataBase conf) throws Exception{
+    public Cliente findById(long id) throws Exception{
+        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
         Connection conexion = SqlUtil.obtenerConexion(conf);
         Statement st = conexion.createStatement();
         StringBuilder str = new StringBuilder();
@@ -57,86 +62,108 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     /**
-     * @descripcion Método para obtener usuario por nombre.
+     * @descripcion Método para obtener cliente por nombre.
      *
      * @param String name
      * @return User user.
      */
     @Override
-    public User findByName(String name) {
-        for (User user : users) {
-            if (user.getName().equalsIgnoreCase(name)) {
-                return user;
+    public Cliente findByName(String name) {
+        for (Cliente cli : clientes) {
+            if (cli.getNombre().equalsIgnoreCase(name)) {
+                return cli;
             }
         }
         return null;
     }
 
     /**
-     * @descripcion Método para validar crear un usuario.
+     * @descripcion Método para validar crear un cliente.
      *
-     * @param User user
+     * @param Cliente cliente
      */
     @Override
-    public void saveUser(User user) {
-        user.setId(counter.incrementAndGet());
-        users.add(user);
+    public void saveCliente(Cliente cliente) throws Exception {
+        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
+        cliente.setId(counter.incrementAndGet());  
+        Connection conexion = SqlUtil.obtenerConexion(conf);
+        Statement st = conexion.createStatement();
+        StringBuilder str = new StringBuilder();
+        str.append("INSERT INTO public.\"TCLIENTE\"( ");
+        str.append(" \"PK_TCLIENTE\", \"NOMBRES\", \"APELLIDOS\") ");
+        str.append(" VALUES (?, ?, ?) ");
+        ResultSet rs = st.executeQuery(str.toString());
     }
 
     /**
-     * @descripcion Método para actualizar un usuario.
+     * @descripcion Método para actualizar un cliente.
      *
-     * @param User user
+     * @param Cliente cliente
      */
     @Override
-    public void updateUser(User user) {
-        int index = users.indexOf(user);
-        users.set(index, user);
+    public void updateCliente(Cliente cliente) {
+        int index = clientes.indexOf(cliente);
+        clientes.set(index, cliente);
     }
 
     /**
-     * @descripcion Método para eliminar un usuario por id.
+     * @descripcion Método para eliminar un cliente por id.
      *
      * @param long id
      */
     @Override
-    public void deleteUserById(long id) {
-        for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
-            User user = iterator.next();
-            if (user.getId() == id) {
+    public void deleteClienteById(long id) {
+        for (Iterator<Cliente> iterator = clientes.iterator(); iterator.hasNext();) {
+            Cliente cliente = iterator.next();
+            if (cliente.getId() == id) {
                 iterator.remove();
             }
         }
     }
 
     /**
-     * @descripcion Método para listar todos los usuarios.
+     * @param conf
+     * @throws java.lang.Exception
+     * @descripcion Método para listar todos los clientes.
      *
-     * @return List<User> users
+     * @return List<Cliente> users
      */
     @Override
-    public List<User> findAllUsers() {
-        return users;
+    public List<Cliente> findAllClientes() throws Exception {
+        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
+        Connection conexion = SqlUtil.obtenerConexion(conf);
+        Statement st = conexion.createStatement();
+        StringBuilder str = new StringBuilder();
+        str.append("SELECT * FROM public.\"TCLIENTE\" ");
+        ResultSet rs = st.executeQuery(str.toString());
+        Cliente cliente = new Cliente();
+        List<Cliente> listClientes = new ArrayList<>();
+        while (rs.next()) {
+            cliente = new Cliente(rs.getLong(1), rs.getString(2), rs.getString(3));
+            System.out.println(rs.getString(1));
+            listClientes.add(cliente);
+        }
+        return listClientes;
     }
 
     /**
-     * @descripcion Método para eliminar todos los usuarios.
+     * @descripcion Método para eliminar todos los clientes.
      *
      */
     @Override
-    public void deleteAllUsers() {
-        users.clear();
+    public void deleteAllClientes() {
+        clientes.clear();
     }
 
     /**
-     * @descripcion Método para validar si existe un usuario.
+     * @descripcion Método para validar si existe un cliente.
      *
      * @param User user
      * @return boolean valido.
      */
     @Override
-    public boolean isUserExist(User user) {
-        return findByName(user.getName()) != null;
+    public boolean isClienteExist(Cliente cliente) {
+        return findByName(cliente.getNombre()) != null;
     }
 
     private static List<User> populateDummyUsers() {

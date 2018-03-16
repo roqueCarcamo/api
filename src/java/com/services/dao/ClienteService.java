@@ -2,7 +2,6 @@ package com.services.dao;
 
 import com.services.model.Cliente;
 import java.util.List;
-import com.services.model.User;
 import com.services.model.dataBase.ConfiguracionDataBase;
 
 /**
@@ -20,7 +19,7 @@ public interface ClienteService {
      * @param conf
      * @return User user.
      */
-    Cliente findById(long id, ConfiguracionDataBase conf) throws Exception;
+    Cliente findById(long id) throws Exception;
 
     /**
      * @descripcion Método para obtener usuario por nombre.
@@ -28,48 +27,48 @@ public interface ClienteService {
      * @param name
      * @return User user.
      */
-    User findByName(String name);
+    Cliente findByName(String name);
 
     /**
-     * @descripcion Método para validar crear un usuario.
+     * @descripcion Método para validar crear un cliente.
      *
-     * @param user
+     * @param cliente
      */
-    void saveUser(User user);
+    void saveCliente(Cliente cliente) throws Exception;
 
     /**
-     * @descripcion Método para actualizar un usuario.
+     * @descripcion Método para actualizar un cliente.
      *
-     * @param user
+     * @param cliente
      */
-    void updateUser(User user);
+    void updateCliente(Cliente cliente);
 
     /**
-     * @descripcion Método para eliminar un usuario por id.
+     * @descripcion Método para eliminar un cliente por id.
      *
      * @param id
      */
-    void deleteUserById(long id);
+    void deleteClienteById(long id);
 
     /**
-     * @descripcion Método para listar todos los usuarios.
+     * @descripcion Método para listar todos los cliente.
      *
-     * @return List<User> users
+     * @return List<Cliente> clientes
      */
-    List<User> findAllUsers();
+    List<Cliente> findAllClientes() throws Exception;
 
     /**
-     * @descripcion Método para eliminar todos los usuarios.
+     * @descripcion Método para eliminar todos los clientes.
      *
      */
-    void deleteAllUsers();
+    void deleteAllClientes();
 
     /**
-     * @descripcion Método para validar si existe un usuario.
+     * @descripcion Método para validar si existe un cliente.
      *
      * @param user
      * @return boolean valido.
      */
-    public boolean isUserExist(User user);
+    public boolean isClienteExist(Cliente cliente);
 
 }
