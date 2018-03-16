@@ -37,12 +37,6 @@ public class Database implements Serializable {
         try {
             Class.forName(driver).newInstance();
             conexion = DriverManager.getConnection(url, usr, pass);
-            Statement st = conexion.createStatement();
-            ResultSet rs = st.executeQuery("Select * from public.orders");
-            while (rs.next()) {
-                System.out.println(rs.getString(2));
-            }
-
             Logger.getLogger(Database.class.getName()).log(Level.INFO, "Conexión a Base de Datos " + bd + " Ok ", "");
         } catch (Exception exc) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al tratar de abrir la base de Datos " + ip + " BD " + bd + " Usuario " + usr + " Password " + pass + " Puerto " + port, exc);
