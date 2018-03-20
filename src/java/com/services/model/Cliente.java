@@ -9,15 +9,15 @@ import java.io.Serializable;
 public class Cliente implements Serializable {
 
     private Long id;
-    private String nombre;
+    private String nombres;
     private String apellidos;
 
     public Cliente() {
     }
 
-    public Cliente(Long id, String nombre, String apellidos) {
+    public Cliente(Long id, String nombres, String apellidos) {
         this.id = id;
-        this.nombre = nombre;
+        this.nombres = nombres;
         this.apellidos = apellidos;
     }
 
@@ -29,12 +29,12 @@ public class Cliente implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getNombres() {
+        return nombres;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
     }
 
     public String getApellidos() {

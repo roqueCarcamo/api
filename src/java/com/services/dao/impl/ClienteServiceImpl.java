@@ -10,17 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.services.model.User;
 import com.services.model.dataBase.ConfiguracionDataBase;
-import com.services.servicios.ClienteRestControllerSRV;
 import com.services.servicios.reader.FileReader;
 import com.services.servicios.util.SqlUtil;
-import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
 
 /**
  * @descripcion: Ejemplo de clase que implementa los métodos de tipo CRUD.
@@ -70,7 +65,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public Cliente findByName(String name) {
         for (Cliente cli : clientes) {
-            if (cli.getNombre().equalsIgnoreCase(name)) {
+            if (cli.getNombres().equalsIgnoreCase(name)) {
                 return cli;
             }
         }
@@ -78,27 +73,30 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     /**
+     * @throws java.lang.Exception
      * @descripcion Método para validar crear un cliente.
      *
-     * @param Cliente cliente
+     * @param cliente
      */
     @Override
     public void saveCliente(Cliente cliente) throws Exception {
         ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
         cliente.setId(counter.incrementAndGet());  
-        Connection conexion = SqlUtil.obtenerConexion(conf);
-        Statement st = conexion.createStatement();
+        Connection conexion = SqlUtil.obtenerConexion(conf);      
         StringBuilder str = new StringBuilder();
         str.append("INSERT INTO public.\"TCLIENTE\"( ");
-        str.append(" \"PK_TCLIENTE\", \"NOMBRES\", \"APELLIDOS\") ");
-        str.append(" VALUES (?, ?, ?) ");
-        ResultSet rs = st.executeQuery(str.toString());
+        str.append(" \"NOMBRES\", \"APELLIDOS\") ");
+        str.append(" VALUES (?, ?) ");
+        PreparedStatement preparedStatement = conexion.prepareStatement(str.toString());;
+        preparedStatement.setString(1, cliente.getNombres());
+        preparedStatement.setString(2, cliente.getApellidos());
+        preparedStatement.executeQuery();  
     }
 
     /**
      * @descripcion Método para actualizar un cliente.
      *
-     * @param Cliente cliente
+     * @param cliente
      */
     @Override
     public void updateCliente(Cliente cliente) {
@@ -163,7 +161,7 @@ public class ClienteServiceImpl implements ClienteService {
      */
     @Override
     public boolean isClienteExist(Cliente cliente) {
-        return findByName(cliente.getNombre()) != null;
+        return findByName(cliente.getNombres()) != null;
     }
 
     private static List<User> populateDummyUsers() {
