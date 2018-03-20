@@ -3,12 +3,9 @@ package com.services.dao.impl;
 import com.services.dao.ClienteService;
 import com.services.model.Cliente;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.services.model.User;
 import com.services.model.dataBase.ConfiguracionDataBase;
 import com.services.servicios.reader.FileReader;
 import com.services.servicios.util.SqlUtil;
@@ -19,9 +16,8 @@ import java.sql.Statement;
 
 /**
  * @descripcion: Ejemplo de clase que implementa los métodos de tipo CRUD.
- * Autor:
  * @autor: (Rodolfo Cárcamo)
- * @fechaCreacion: 12-04-2017
+ * @fechaCreacion: 15-05-2018
  */
 @Service("clienteService")
 @Transactional
@@ -47,8 +43,7 @@ public class ClienteServiceImpl implements ClienteService {
         ResultSet rs = st.executeQuery(str.toString());
         Cliente cliente = new Cliente();
         while (rs.next()) {
-            cliente = new Cliente(id, rs.getString(1), rs.getString(2));
-            System.out.println(rs.getString(1));   
+            cliente = new Cliente(id, rs.getString(1), rs.getString(2));   
         }
         return cliente;
     }
