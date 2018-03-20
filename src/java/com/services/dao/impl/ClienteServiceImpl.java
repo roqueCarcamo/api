@@ -27,8 +27,6 @@ import java.sql.Statement;
 @Transactional
 public class ClienteServiceImpl implements ClienteService {
 
-    private static final AtomicLong counter = new AtomicLong(); //Generador de id
-
     private static List<Cliente> clientes; //Lista de clientes.
 
 
@@ -37,7 +35,6 @@ public class ClienteServiceImpl implements ClienteService {
      * @descripcion Método para buscar usuario por id.
      *
      * @param id
-     * @param conf
      * @return user.
      */
     @Override
@@ -59,13 +56,13 @@ public class ClienteServiceImpl implements ClienteService {
     /**
      * @descripcion Método para obtener cliente por nombre.
      *
-     * @param String name
+     * @param nombre
      * @return User user.
      */
     @Override
-    public Cliente findByName(String name) {
+    public Cliente findByName(String nombre) {
         for (Cliente cli : clientes) {
-            if (cli.getNombres().equalsIgnoreCase(name)) {
+            if (cli.getNombres().equalsIgnoreCase(nombre)) {
                 return cli;
             }
         }
@@ -80,8 +77,7 @@ public class ClienteServiceImpl implements ClienteService {
      */
     @Override
     public void saveCliente(Cliente cliente) throws Exception {
-        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
-        cliente.setId(counter.incrementAndGet());  
+        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres"); 
         Connection conexion = SqlUtil.obtenerConexion(conf);      
         StringBuilder str = new StringBuilder();
         str.append("INSERT INTO public.\"TCLIENTE\"( ");
@@ -90,7 +86,7 @@ public class ClienteServiceImpl implements ClienteService {
         PreparedStatement preparedStatement = conexion.prepareStatement(str.toString());;
         preparedStatement.setString(1, cliente.getNombres());
         preparedStatement.setString(2, cliente.getApellidos());
-        preparedStatement.executeQuery();  
+        preparedStatement.executeUpdate();  
     }
 
     /**
@@ -105,22 +101,23 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     /**
+     * @throws java.lang.Exception
      * @descripcion Método para eliminar un cliente por id.
      *
-     * @param long id
+     * @param id
      */
     @Override
-    public void deleteClienteById(long id) {
-        for (Iterator<Cliente> iterator = clientes.iterator(); iterator.hasNext();) {
-            Cliente cliente = iterator.next();
-            if (cliente.getId() == id) {
-                iterator.remove();
-            }
-        }
+    public void deleteClienteById(long id) throws Exception {
+        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
+        Connection conexion = SqlUtil.obtenerConexion(conf);      
+        StringBuilder str = new StringBuilder();
+        str.append("DELETE FROM public.\"TCLIENTE\" WHERE \"PK_TCLIENTE\" = ?");
+        PreparedStatement preparedStatement = conexion.prepareStatement(str.toString());
+        preparedStatement.setLong(1, id);
+        preparedStatement.executeUpdate();  
     }
 
     /**
-     * @param conf
      * @throws java.lang.Exception
      * @descripcion Método para listar todos los clientes.
      *
@@ -149,28 +146,24 @@ public class ClienteServiceImpl implements ClienteService {
      *
      */
     @Override
-    public void deleteAllClientes() {
-        clientes.clear();
+    public void deleteAllClientes() throws Exception {
+        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
+        Connection conexion = SqlUtil.obtenerConexion(conf);      
+        StringBuilder str = new StringBuilder();
+        str.append("DELETE FROM public.\"TCLIENTE\" ");
+        PreparedStatement preparedStatement = conexion.prepareStatement(str.toString());
+        preparedStatement.executeUpdate();  
     }
 
     /**
      * @descripcion Método para validar si existe un cliente.
      *
-     * @param User user
+     * @param cliente
      * @return boolean valido.
      */
     @Override
     public boolean isClienteExist(Cliente cliente) {
         return findByName(cliente.getNombres()) != null;
-    }
-
-    private static List<User> populateDummyUsers() {
-        List<User> users = new ArrayList<>();
-        users.add(new User(counter.incrementAndGet(), "Sam", 30, 70000));
-        users.add(new User(counter.incrementAndGet(), "Tom", 40, 50000));
-        users.add(new User(counter.incrementAndGet(), "Jerome", 45, 30000));
-        users.add(new User(counter.incrementAndGet(), "Silvia", 50, 40000));
-        return users;
     }
 
 }

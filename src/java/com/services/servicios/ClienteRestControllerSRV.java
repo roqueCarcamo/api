@@ -39,12 +39,13 @@ public class ClienteRestControllerSRV implements Serializable {
      * @fechaCreacion: 12-03-2018
      */
     @RequestMapping(value = "clientes", method = RequestMethod.GET)
-    public ResponseEntity<List<Cliente>> listAllUsers() {
+    public ResponseEntity<List<Cliente>> listAllClientes() {
         List<Cliente> clientes = new ArrayList<>();
         try {
             clientes = clienteService.findAllClientes();
         } catch (Exception ex) {
             Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.valueOf(500));
         }
         if (clientes.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -61,7 +62,7 @@ public class ClienteRestControllerSRV implements Serializable {
      * @fechaCreacion: 12-03-2018
      */
     @RequestMapping(value = "/cliente/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Cliente> getUser(@PathVariable("id") long id) {
+    public ResponseEntity<Cliente> getCliente(@PathVariable("id") long id) {
         Cliente cliente = new Cliente();
         try {
             cliente = clienteService.findById(id);
@@ -70,6 +71,7 @@ public class ClienteRestControllerSRV implements Serializable {
             }
         } catch (Exception ex) {
             Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.valueOf(500));
         }
         return new ResponseEntity<>(cliente, HttpStatus.OK);
     }
@@ -82,14 +84,15 @@ public class ClienteRestControllerSRV implements Serializable {
      * @return void;
      */
     @RequestMapping(value = "/cliente/", method = RequestMethod.POST)
-    public ResponseEntity<Void> createUser(@RequestBody Cliente cliente, UriComponentsBuilder ucBuilder) {
-        if (clienteService.isClienteExist(cliente)) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+    public ResponseEntity<Void> createCliente(@RequestBody Cliente cliente, UriComponentsBuilder ucBuilder) {
+        //if (clienteService.isClienteExist(cliente)) {
+        //   return new ResponseEntity<>(HttpStatus.CONFLICT);
+        //}
         try {
             clienteService.saveCliente(cliente);
         } catch (Exception ex) {
             Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.valueOf(500));
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/cliente/{id}").buildAndExpand(cliente.getId()).toUri());
@@ -106,7 +109,7 @@ public class ClienteRestControllerSRV implements Serializable {
      * @fechaCreacion: 12-03-2018
      */
     @RequestMapping(value = "/cliente/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Cliente> updateUser(@PathVariable("id") long id, @RequestBody User user) {
+    public ResponseEntity<Cliente> updateCliente(@PathVariable("id") long id, @RequestBody User user) {
         Cliente clienteCurrent = new Cliente();
         try {
             clienteCurrent = clienteService.findById(id);
@@ -115,6 +118,7 @@ public class ClienteRestControllerSRV implements Serializable {
             }
         } catch (Exception ex) {
             Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.valueOf(500));
         }
         if (clienteCurrent == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -135,21 +139,26 @@ public class ClienteRestControllerSRV implements Serializable {
      * @fechaCreacion: 12-03-2018
      */
     @RequestMapping(value = "/cliente/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<User> deleteUser(@PathVariable("id") long id) {
-        Cliente clienteCurrent = new Cliente();
+    public ResponseEntity<User> deleteCliente(@PathVariable("id") long id) {
         try {
-            clienteCurrent = clienteService.findById(id);
+            Cliente clienteCurrent = new Cliente();
+            try {
+                clienteCurrent = clienteService.findById(id);
+                if (clienteCurrent == null) {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+            }
             if (clienteCurrent == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+            clienteService.deleteClienteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception ex) {
             Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.valueOf(500));
         }
-        if (clienteCurrent == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        clienteService.deleteClienteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -160,7 +169,7 @@ public class ClienteRestControllerSRV implements Serializable {
      * @fechaCreacion: 12-03-2018
      */
     @RequestMapping(value = "/cliente/", method = RequestMethod.DELETE)
-    public ResponseEntity<User> deleteAllUsers() {
+    public ResponseEntity<User> deleteAllClientes() {
         clienteService.deleteAllClientes();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

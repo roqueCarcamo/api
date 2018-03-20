@@ -30,6 +30,7 @@ public interface ClienteService {
     Cliente findByName(String name);
 
     /**
+     * @throws java.lang.Exception
      * @descripcion Método para validar crear un cliente.
      *
      * @param cliente
@@ -44,13 +45,15 @@ public interface ClienteService {
     void updateCliente(Cliente cliente);
 
     /**
+     * @throws java.lang.Exception
      * @descripcion Método para eliminar un cliente por id.
      *
      * @param id
      */
-    void deleteClienteById(long id);
+    void deleteClienteById(long id) throws Exception;
 
     /**
+     * @throws java.lang.Exception
      * @descripcion Método para listar todos los cliente.
      *
      * @return List<Cliente> clientes
@@ -61,12 +64,11 @@ public interface ClienteService {
      * @descripcion Método para eliminar todos los clientes.
      *
      */
-    void deleteAllClientes();
+    void deleteAllClientes() throws Exception;
 
     /**
+     * @param cliente
      * @descripcion Método para validar si existe un cliente.
-     *
-     * @param user
      * @return boolean valido.
      */
     public boolean isClienteExist(Cliente cliente);
