@@ -63,7 +63,7 @@ public class ClienteRestControllerSRV implements Serializable {
      */
     @RequestMapping(value = "/cliente/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Cliente> getCliente(@PathVariable("id") long id) {
-        Cliente cliente = new Cliente();
+        Cliente cliente;
         try {
             cliente = clienteService.findById(id);
             if (cliente == null) {
@@ -85,9 +85,6 @@ public class ClienteRestControllerSRV implements Serializable {
      */
     @RequestMapping(value = "/cliente/", method = RequestMethod.POST)
     public ResponseEntity<Void> createCliente(@RequestBody Cliente cliente, UriComponentsBuilder ucBuilder) {
-        //if (clienteService.isClienteExist(cliente)) {
-        //   return new ResponseEntity<>(HttpStatus.CONFLICT);
-        //}
         try {
             clienteService.saveCliente(cliente);
         } catch (Exception ex) {
@@ -100,34 +97,38 @@ public class ClienteRestControllerSRV implements Serializable {
     }
 
     /**
-     * @descripcion Método para actualizar un cliente.
+     * @descripcion método para actualizar un cliente.
      *
-     * @param id, user
-     * @param user
+     * @param id
+     * @param cliente
      * @return users;
      * @autor: (Rodolfo Cárcamo)
      * @fechaCreacion: 12-03-2018
      */
     @RequestMapping(value = "/cliente/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Cliente> updateCliente(@PathVariable("id") long id, @RequestBody User user) {
-        Cliente clienteCurrent = new Cliente();
+    public ResponseEntity<Cliente> updateCliente(@PathVariable("id") long id, @RequestBody Cliente cliente) {
         try {
-            clienteCurrent = clienteService.findById(id);
+            Cliente clienteCurrent;
+            try {
+                clienteCurrent = clienteService.findById(id);
+                if (clienteCurrent == null) {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+                return new ResponseEntity<>(HttpStatus.valueOf(500));
+            }
             if (clienteCurrent == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+            clienteCurrent.setNombres(cliente.getNombres());
+            clienteCurrent.setApellidos(cliente.getApellidos());
+            clienteService.updateCliente(clienteCurrent);
+            return new ResponseEntity<>(clienteCurrent, HttpStatus.OK);
         } catch (Exception ex) {
             Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>(HttpStatus.valueOf(500));
         }
-        if (clienteCurrent == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        //currentUser.setName(user.getName());
-        //currentUser.setAge(user.getAge());
-        //currentUser.setSalary(user.getSalary());
-        //clienteService.updateUser(clienteCurrent);
-        return new ResponseEntity<>(clienteCurrent, HttpStatus.OK);
     }
 
     /**
@@ -154,7 +155,7 @@ public class ClienteRestControllerSRV implements Serializable {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             clienteService.deleteClienteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception ex) {
             Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>(HttpStatus.valueOf(500));
@@ -170,8 +171,13 @@ public class ClienteRestControllerSRV implements Serializable {
      */
     @RequestMapping(value = "/cliente/", method = RequestMethod.DELETE)
     public ResponseEntity<User> deleteAllClientes() {
-        clienteService.deleteAllClientes();
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            clienteService.deleteAllClientes();
+        } catch (Exception ex) {
+            Logger.getLogger(ClienteRestControllerSRV.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.valueOf(500));
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

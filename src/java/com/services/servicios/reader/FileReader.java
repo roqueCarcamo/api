@@ -17,7 +17,7 @@ import org.xml.sax.SAXException;
 /**
  * @descripcion: Clase que permite leer el archivo llamado "config.xml" donde se encuentran las configuraciones de la base de dato.
 * @autor: (Rodolfo Cárcamo)
- * @fechaCreacion: 12-04-2017
+ * @fechaCreacion: 15-03-2018
 */
 public class FileReader implements Serializable {
 
@@ -108,7 +108,7 @@ public class FileReader implements Serializable {
     /**
      * Método para obtener las configuraciones de la base de datos a partir del nombre del usuario.
      *
-     * @param String username
+     * @param username
      * @return ConfiguracionDataBase configuracionDataBase
      * @throws ParserConfigurationException
      * @throws SAXException

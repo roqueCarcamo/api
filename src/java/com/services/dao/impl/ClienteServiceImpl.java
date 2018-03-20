@@ -25,16 +25,15 @@ public class ClienteServiceImpl implements ClienteService {
 
     private static List<Cliente> clientes; //Lista de clientes.
 
-
     /**
      * @throws java.lang.Exception
-     * @descripcion Método para buscar usuario por id.
+     * @descripcion Método para buscar cliente por id.
      *
      * @param id
      * @return user.
      */
     @Override
-    public Cliente findById(long id) throws Exception{
+    public Cliente findById(long id) throws Exception {
         ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
         Connection conexion = SqlUtil.obtenerConexion(conf);
         Statement st = conexion.createStatement();
@@ -43,19 +42,21 @@ public class ClienteServiceImpl implements ClienteService {
         ResultSet rs = st.executeQuery(str.toString());
         Cliente cliente = new Cliente();
         while (rs.next()) {
-            cliente = new Cliente(id, rs.getString(1), rs.getString(2));   
+            cliente = new Cliente(id, rs.getString(1), rs.getString(2));
         }
         return cliente;
     }
 
     /**
+     * @throws java.lang.Exception
      * @descripcion Método para obtener cliente por nombre.
      *
      * @param nombre
      * @return User user.
      */
     @Override
-    public Cliente findByName(String nombre) {
+    public Cliente findByName(String nombre) throws Exception {
+        findAllClientes();
         for (Cliente cli : clientes) {
             if (cli.getNombres().equalsIgnoreCase(nombre)) {
                 return cli;
@@ -72,16 +73,16 @@ public class ClienteServiceImpl implements ClienteService {
      */
     @Override
     public void saveCliente(Cliente cliente) throws Exception {
-        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres"); 
-        Connection conexion = SqlUtil.obtenerConexion(conf);      
+        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
+        Connection conexion = SqlUtil.obtenerConexion(conf);
         StringBuilder str = new StringBuilder();
         str.append("INSERT INTO public.\"TCLIENTE\"( ");
         str.append(" \"NOMBRES\", \"APELLIDOS\") ");
         str.append(" VALUES (?, ?) ");
-        PreparedStatement preparedStatement = conexion.prepareStatement(str.toString());;
+        PreparedStatement preparedStatement = conexion.prepareStatement(str.toString());
         preparedStatement.setString(1, cliente.getNombres());
         preparedStatement.setString(2, cliente.getApellidos());
-        preparedStatement.executeUpdate();  
+        preparedStatement.executeUpdate();
     }
 
     /**
@@ -90,9 +91,18 @@ public class ClienteServiceImpl implements ClienteService {
      * @param cliente
      */
     @Override
-    public void updateCliente(Cliente cliente) {
-        int index = clientes.indexOf(cliente);
-        clientes.set(index, cliente);
+    public void updateCliente(Cliente cliente) throws Exception {
+        ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
+        Connection conexion = SqlUtil.obtenerConexion(conf);
+        StringBuilder str = new StringBuilder();
+        str.append("UPDATE public.\"TCLIENTE\" ");
+        str.append(" SET \"NOMBRES\"=?, \"APELLIDOS\"=? ");
+        str.append(" WHERE \"PK_TCLIENTE\"=? ");
+        PreparedStatement preparedStatement = conexion.prepareStatement(str.toString());
+        preparedStatement.setString(1, cliente.getNombres());
+        preparedStatement.setString(2, cliente.getApellidos());
+        preparedStatement.setLong(3, cliente.getId());
+        preparedStatement.executeUpdate();
     }
 
     /**
@@ -104,12 +114,12 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public void deleteClienteById(long id) throws Exception {
         ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
-        Connection conexion = SqlUtil.obtenerConexion(conf);      
+        Connection conexion = SqlUtil.obtenerConexion(conf);
         StringBuilder str = new StringBuilder();
         str.append("DELETE FROM public.\"TCLIENTE\" WHERE \"PK_TCLIENTE\" = ?");
         PreparedStatement preparedStatement = conexion.prepareStatement(str.toString());
         preparedStatement.setLong(1, id);
-        preparedStatement.executeUpdate();  
+        preparedStatement.executeUpdate();
     }
 
     /**
@@ -127,13 +137,12 @@ public class ClienteServiceImpl implements ClienteService {
         str.append("SELECT * FROM public.\"TCLIENTE\" ");
         ResultSet rs = st.executeQuery(str.toString());
         Cliente cliente = new Cliente();
-        List<Cliente> listClientes = new ArrayList<>();
+        clientes = new ArrayList<>();
         while (rs.next()) {
             cliente = new Cliente(rs.getLong(1), rs.getString(2), rs.getString(3));
-            System.out.println(rs.getString(1));
-            listClientes.add(cliente);
+            clientes.add(cliente);
         }
-        return listClientes;
+        return clientes;
     }
 
     /**
@@ -143,21 +152,23 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public void deleteAllClientes() throws Exception {
         ConfiguracionDataBase conf = FileReader.getConfigurationFromUserName("postgres");
-        Connection conexion = SqlUtil.obtenerConexion(conf);      
+        Connection conexion = SqlUtil.obtenerConexion(conf);
         StringBuilder str = new StringBuilder();
         str.append("DELETE FROM public.\"TCLIENTE\" ");
         PreparedStatement preparedStatement = conexion.prepareStatement(str.toString());
-        preparedStatement.executeUpdate();  
+        preparedStatement.executeUpdate();
     }
 
     /**
+     * @throws java.lang.Exception
      * @descripcion Método para validar si existe un cliente.
      *
      * @param cliente
      * @return boolean valido.
      */
     @Override
-    public boolean isClienteExist(Cliente cliente) {
+    public boolean isClienteExist(Cliente cliente) throws Exception {
+        findAllClientes();
         return findByName(cliente.getNombres()) != null;
     }
 

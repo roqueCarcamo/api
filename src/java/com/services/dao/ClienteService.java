@@ -2,32 +2,30 @@ package com.services.dao;
 
 import com.services.model.Cliente;
 import java.util.List;
-import com.services.model.dataBase.ConfiguracionDataBase;
 
 /**
  * @descripcion: Clase ejemplo que permite declarar métodos de tipo CRUD.
  * @autor: (Rodolfo Cárcamo)
- * @fechaCreacion: 12-04-2017
+ * @fechaCreacion: 15-03-2018
 */
 public interface ClienteService {
 
     /**
      * @throws java.lang.Exception
-     * @descripcion Método para buscar usuario por id.
+     * @descripcion Método para buscar cliente por id.
      *
      * @param id
-     * @param conf
-     * @return User user.
+     * @return Cliente cliente.
      */
     Cliente findById(long id) throws Exception;
 
     /**
-     * @descripcion Método para obtener usuario por nombre.
+     * @descripcion Método para obtener cliente por nombre.
      *
      * @param name
-     * @return User user.
+     * @return Cliente cliente.
      */
-    Cliente findByName(String name);
+    Cliente findByName(String name) throws Exception;
 
     /**
      * @throws java.lang.Exception
@@ -38,11 +36,12 @@ public interface ClienteService {
     void saveCliente(Cliente cliente) throws Exception;
 
     /**
+     * @throws java.lang.Exception
      * @descripcion Método para actualizar un cliente.
      *
      * @param cliente
      */
-    void updateCliente(Cliente cliente);
+    void updateCliente(Cliente cliente) throws Exception;
 
     /**
      * @throws java.lang.Exception
@@ -61,6 +60,7 @@ public interface ClienteService {
     List<Cliente> findAllClientes() throws Exception;
 
     /**
+     * @throws java.lang.Exception
      * @descripcion Método para eliminar todos los clientes.
      *
      */
@@ -71,6 +71,6 @@ public interface ClienteService {
      * @descripcion Método para validar si existe un cliente.
      * @return boolean valido.
      */
-    public boolean isClienteExist(Cliente cliente);
+    public boolean isClienteExist(Cliente cliente) throws Exception;
 
 }

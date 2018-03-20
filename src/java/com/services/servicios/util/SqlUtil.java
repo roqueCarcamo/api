@@ -25,7 +25,7 @@ import org.codehaus.jettison.json.JSONObject;
 /**
  * @descripcion: Clase de utilidad para consultas sql.
  * @autor: (Rodolfo Cárcamo)
- * @fechaCreacion: 12-04-2017
+ * @fechaCreacion: 15-03-2018
  */
 public class SqlUtil {
 
